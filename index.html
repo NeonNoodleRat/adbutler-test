@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdButler Test Site</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .ad-container {
+            width: 300px;
+            height: 250px;
+            border: 1px dashed #ccc;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .controls {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Medical Portal Test Site</h1>
+    
+    <div class="controls">
+        <h3>Simulation Controls</h3>
+        <label for="specialty">Provider Specialty:</label>
+        <select id="specialty" onchange="updateAd()">
+            <option value="">No Specialty (Default)</option>
+            <option value="cardiologist">Cardiologist</option>
+            <option value="dermatologist">Dermatologist</option>
+            <option value="neurologist">Neurologist</option>
+        </select>
+        
+        <button onclick="refreshAd()">Refresh Ad</button>
+    </div>
+    
+    <h2>Login Page Ad</h2>
+    <div class="ad-container" id="login-ad">
+        Ad will appear here
+    </div>
+    
+    <script>
+        // Function to update the ad based on specialty
+        function updateAd() {
+            // Clear existing ad
+            document.getElementById('login-ad').innerHTML = 'Loading ad...';
+            
+            // Get selected specialty
+            const specialty = document.getElementById('specialty').value;
+            
+            // Set up AdButler with data key
+            var AdButler = AdButler || {};
+            AdButler.ads = AdButler.ads || [];
+            
+            // This is where we set the data key value
+            var abkw = specialty ? 'specialty=' + specialty : '';
+            
+            // Replace these with your actual account and zone IDs
+            const accountId = 123456; // Your AdButler account ID
+            const zoneId = 789012;    // Your zone ID
+            
+            // Call AdButler with the appropriate data key
+            AdButler.ads.push({
+                handler: function(opt) {
+                    AdButler.register(accountId, zoneId, [300, 250], 'login-ad', opt);
+                },
+                opt: {
+                    place: abkw
+                }
+            });
+        }
+        
+        // Function to refresh the ad
+        function refreshAd() {
+            updateAd();
+        }
+        
+        // Load initial ad on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAd();
+        });
+    </script>
+</body>
+</html>
