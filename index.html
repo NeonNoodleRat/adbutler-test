@@ -13,7 +13,6 @@
 
   Created for internal development and testing only.
 -->
-
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -83,6 +82,10 @@
       align-items: center;
       justify-content: center;
     }
+
+    .ad-hidden {
+      display: none !important;
+    }
   </style>
 </head>
 <body>
@@ -95,41 +98,48 @@
     <button>Log In</button>
     <a href="#" class="link">Forgot Your Username or Password?</a>
 
-    <!-- AdButler Ad Container -->
-    <div class="ad-container" id="placement_910943_0">
-      <!-- Ad will load here -->
+    <!-- Obfuscated Ad Container -->
+    <div class="ad-container" id="content-slot-1">
+      Loading...
     </div>
   </div>
 
-  <!-- AdButler Ad Script -->
   <script type="text/javascript">
-    if (!window.AdButler){
-      (function(){
-        var s = document.createElement("script");
-        s.async = true;
-        s.type = "text/javascript";
-        s.src = 'https://servedbyadbutler.com/app.js';
-        var n = document.getElementsByTagName("script")[0];
-        n.parentNode.insertBefore(s, n);
-      }());
-    }
-  </script>
-  <script type="text/javascript">
-    var AdButler = AdButler || {};
-    AdButler.ads = AdButler.ads || [];
-    var abkw = window.abkw || '';
-    var plc910943 = window.plc910943 || 0;
-    AdButler.ads.push({
-      handler: function(opt){
-        AdButler.register(188651, 910943, [300,250], 'placement_910943_' + opt.place, opt);
-      },
-      opt: {
-        place: plc910943++,
-        keywords: abkw,
-        domain: 'servedbyadbutler.com',
-        click: ''
+    // Gracefully hide the ad container if the ad script is blocked
+    function hideAdIfBlocked() {
+      const el = document.getElementById("content-slot-1");
+      if (el && el.innerHTML.includes("Loading")) {
+        el.classList.add("ad-hidden");
       }
-    });
+    }
+
+    // Load AdButler async script
+    (function(){
+      var s = document.createElement("script");
+      s.async = true;
+      s.type = "text/javascript";
+      s.src = 'https://servedbyadbutler.com/app.js';
+      s.onload = function () {
+        var AdButler = window.AdButler || {};
+        AdButler.ads = AdButler.ads || [];
+        var plc910943 = window.plc910943 || 0;
+        var abkw = window.abkw || '';
+
+        AdButler.ads.push({
+          handler: function(opt) {
+            AdButler.register(188651, 910943, [300, 250], 'content-slot-1', opt);
+          },
+          opt: {
+            place: plc910943++,
+            keywords: abkw,
+            domain: 'servedbyadbutler.com',
+            click: 'CLICK_MACRO_PLACEHOLDER'
+          }
+        });
+      };
+      s.onerror = hideAdIfBlocked;
+      document.head.appendChild(s);
+    })();
   </script>
 </body>
 </html>
