@@ -14,7 +14,6 @@
   Created for internal development and testing only.
 -->
 
-
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -97,28 +96,40 @@
     <a href="#" class="link">Forgot Your Username or Password?</a>
 
     <!-- AdButler Ad Container -->
-    <div class="ad-container" id="login-ad">
-      Loading ad...
+    <div class="ad-container" id="placement_910943_0">
+      <!-- Ad will load here -->
     </div>
   </div>
 
-  <script>
-    function loadAd() {
-      var AdButler = AdButler || {};
-      AdButler.ads = AdButler.ads || [];
-
-      const accountId = 123456; // Replace with your AdButler Account ID
-      const zoneId = 789012;    // Replace with your AdButler Zone ID
-
-      AdButler.ads.push({
-        handler: function(opt) {
-          AdButler.register(accountId, zoneId, [300, 250], 'login-ad', opt);
-        },
-        opt: {}
-      });
+  <!-- AdButler Ad Script -->
+  <script type="text/javascript">
+    if (!window.AdButler){
+      (function(){
+        var s = document.createElement("script");
+        s.async = true;
+        s.type = "text/javascript";
+        s.src = 'https://servedbyadbutler.com/app.js';
+        var n = document.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      }());
     }
-
-    document.addEventListener('DOMContentLoaded', loadAd);
+  </script>
+  <script type="text/javascript">
+    var AdButler = AdButler || {};
+    AdButler.ads = AdButler.ads || [];
+    var abkw = window.abkw || '';
+    var plc910943 = window.plc910943 || 0;
+    AdButler.ads.push({
+      handler: function(opt){
+        AdButler.register(188651, 910943, [300,250], 'placement_910943_' + opt.place, opt);
+      },
+      opt: {
+        place: plc910943++,
+        keywords: abkw,
+        domain: 'servedbyadbutler.com',
+        click: ''
+      }
+    });
   </script>
 </body>
 </html>
