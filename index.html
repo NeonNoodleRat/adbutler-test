@@ -1,94 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AdButler Test Site</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .ad-container {
-            width: 300px;
-            height: 250px;
-            border: 1px dashed #ccc;
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .controls {
-            margin: 20px 0;
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediMobile Login Test</title>
+  <style>
+    body {
+      background-color: #1e1e1e;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .login-box {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 350px;
+      text-align: center;
+    }
+
+    .login-box img.logo {
+      width: 160px;
+      margin-bottom: 20px;
+    }
+
+    .login-box h2 {
+      margin-bottom: 20px;
+    }
+
+    .login-box input[type="text"],
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .login-box button {
+      background-color: #58b947;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      width: 100%;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .login-box .link {
+      display: block;
+      margin-top: 10px;
+      color: #58b947;
+      text-decoration: none;
+    }
+
+    .login-box .ad-container {
+      width: 300px;
+      height: 250px;
+      margin: 20px auto 0 auto;
+      border: 1px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
 </head>
 <body>
-    <h1>Medical Portal Test Site</h1>
-    
-    <div class="controls">
-        <h3>Simulation Controls</h3>
-        <label for="specialty">Provider Specialty:</label>
-        <select id="specialty" onchange="updateAd()">
-            <option value="">No Specialty (Default)</option>
-            <option value="cardiologist">Cardiologist</option>
-            <option value="dermatologist">Dermatologist</option>
-            <option value="neurologist">Neurologist</option>
-        </select>
-        
-        <button onclick="refreshAd()">Refresh Ad</button>
-    </div>
-    
-    <h2>Login Page Ad</h2>
+  <div class="login-box">
+    <!-- You can replace this text with an actual logo image -->
+    <img class="logo" src="https://medimobile.com/img/logo.png" alt="MediMobile Logo">
+
+    <h2>Log In</h2>
+    <input type="text" placeholder="Username" />
+    <input type="password" placeholder="Password" />
+    <button>Log In</button>
+    <a href="#" class="link">Forgot Your Username or Password?</a>
+
+    <!-- AdButler Ad Container -->
     <div class="ad-container" id="login-ad">
-        Ad will appear here
+      Loading ad...
     </div>
-    
-    <script>
-        // Function to update the ad based on specialty
-        function updateAd() {
-            // Clear existing ad
-            document.getElementById('login-ad').innerHTML = 'Loading ad...';
-            
-            // Get selected specialty
-            const specialty = document.getElementById('specialty').value;
-            
-            // Set up AdButler with data key
-            var AdButler = AdButler || {};
-            AdButler.ads = AdButler.ads || [];
-            
-            // This is where we set the data key value
-            var abkw = specialty ? 'specialty=' + specialty : '';
-            
-            // Replace these with your actual account and zone IDs
-            const accountId = 123456; // Your AdButler account ID
-            const zoneId = 789012;    // Your zone ID
-            
-            // Call AdButler with the appropriate data key
-            AdButler.ads.push({
-                handler: function(opt) {
-                    AdButler.register(accountId, zoneId, [300, 250], 'login-ad', opt);
-                },
-                opt: {
-                    place: abkw
-                }
-            });
-        }
-        
-        // Function to refresh the ad
-        function refreshAd() {
-            updateAd();
-        }
-        
-        // Load initial ad on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateAd();
-        });
-    </script>
+  </div>
+
+  <script>
+    function loadAd() {
+      var AdButler = AdButler || {};
+      AdButler.ads = AdButler.ads || [];
+
+      const accountId = 123456; // Replace with your AdButler Account ID
+      const zoneId = 789012;    // Replace with your AdButler Zone ID
+
+      AdButler.ads.push({
+        handler: function(opt) {
+          AdButler.register(accountId, zoneId, [300, 250], 'login-ad', opt);
+        },
+        opt: {}
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadAd);
+  </script>
 </body>
 </html>
