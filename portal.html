@@ -36,7 +36,7 @@
 </head>
 <body>
   <div class="portal-container">
-    <h2>Welcome to the MediMobile Portal 2</h2>
+    <h2>Welcome to the MediMobile Portal 1</h2>
     <p id="specialty-info"></p>
 
     <div class="ad-container" id="specialty-ad">
@@ -73,21 +73,24 @@
       script.src = 'https://servedbyadbutler.com/app.js';
       script.async = true;
       script.onload = function () {
-      window.AdButler = window.AdButler || {};
-      AdButler.ads = AdButler.ads || [];
-      //AdButler.domain = 'servedbyadbutler.com';  // ✅ Set BEFORE register()
-
-      AdButler.ads.push({
-        handler: function(opt) {
-          AdButler.register(373247, zoneId, [300, 380], 'specialty-ad', opt);
-        },
-        opt: {}
-      });
-    };
+        window.AdButler = window.AdButler || {};
+        AdButler.ads = AdButler.ads || [];
+  
+        // ✅ Correctly set domain before register
+        AdButler.domain = 'servedbyadbutler.com';
+  
+        AdButler.ads.push({
+          handler: function(opt) {
+            AdButler.register(373247, zoneId, [300, 380], 'specialty-ad', opt);
+          },
+          opt: {}
+        });
+      };
       document.head.appendChild(script);
     } else {
       document.getElementById('specialty-ad').innerText = 'No ad available for this specialty.';
     }
-  </script>  
+  </script>
+  
 </body>
 </html>
