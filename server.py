@@ -4,8 +4,13 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    # Serve the portal.html file when accessing the root URL
+    # Serve the login.html file when accessing the root URL
     return send_from_directory('.', 'login.html')
+
+@app.route('/portal.html')
+def portal():
+    # Serve the portal.html file when redirected
+    return send_from_directory('.', 'portal.html')
 
 @app.route('/log', methods=['POST'])
 def log():
