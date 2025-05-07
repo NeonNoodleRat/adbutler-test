@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediMobile Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .portal-container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 400px;
+    }
+    .ad-container {
+      width: 300px;
+      height: 250px;
+      margin: 20px auto;
+      border: 1px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="portal-container">
+    <h2>Welcome to the MediMobile Portal</h2>
+    <p id="specialty-info"></p>
+
+    <div class="ad-container" id="specialty-ad">
+      Loading targeted ad...
+    </div>
+  </div>
+
+  <script>
+    const specialtyByNPI = {
+      '1234567890': 'Cardiology',
+      '2345678901': 'Endocrinology',
+      '3456789012': 'Pediatrics'
+    };
+
+    const zoneIdBySpecialty = {
+      'Cardiology': 910001,
+      'Endocrinology': 910002,
+      'Pediatrics': 910003
+    };
+
+    const npi = localStorage.getItem('npi');
+    const specialty = specialtyByNPI[npi] || 'General';
+    const zoneId = zoneIdBySpecialty[specialty];
+
+    document.getElementById('specialty-info').innerText = `Specialty: ${specialty}`;
+
+    if (zoneId) {
+      const script = document.createElement('script');
+      script.src = 'https://servedbyadbutler.com/app.js';
+      script.async = true;
+      script.onload = function () {
+        window.AdButler = window.AdButler || {};
+        AdButler.ads = AdButler.ads || [];
+
+        AdButler.ads.push({
+          handler: function(opt) {
+            AdButler.register(188651, zoneId, [300, 250], 'specialty-ad', opt);
+          },
+          opt: {}
+        });
+      };
+      document.head.appendChild(script);
+    } else {
+      document.getElementById('specialty-ad').innerText = 'No ad available for this specialty.';
+    }
+  </script>
+</body>
+</html>
