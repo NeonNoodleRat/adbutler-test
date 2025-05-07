@@ -63,6 +63,8 @@
     const zoneId = zoneIdBySpecialty[specialty];
   
     document.getElementById('specialty-info').innerText = `Specialty: ${specialty}`;
+    console.log('Specialty:', specialty);
+    console.log('Zone ID:', zoneId);
   
     // ✅ Set Data Key for AdButler targeting
     window.adb_data = {
@@ -76,16 +78,19 @@
       script.onload = function () {
         window.AdButler = window.AdButler || {};
         AdButler.ads = AdButler.ads || [];
-  
-        // ✅ Correctly set domain before register
+
+        // ✅ Set the domain correctly before registering the ad
         AdButler.domain = 'servedbyadbutler.com';
-  
+
         AdButler.ads.push({
           handler: function(opt) {
             AdButler.register(373247, zoneId, [300, 380], 'specialty-ad', opt);
           },
           opt: {}
         });
+
+        console.log('AdButler domain:', AdButler.domain);
+        console.log('AdButler ads array:', AdButler.ads);
       };
       document.head.appendChild(script);
     } else {
