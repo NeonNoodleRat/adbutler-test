@@ -52,7 +52,7 @@
     };
   
     const zoneIdBySpecialty = {
-      'Cardiology': 915523,  // Replace with your actual AdButler zone ID
+      'Cardiology': 915523,
       'Endocrinology': 910002,
       'Pediatrics': 910003
     };
@@ -76,9 +76,11 @@
         window.AdButler = window.AdButler || {};
         AdButler.ads = AdButler.ads || [];
   
+        // ✅ Set domain and push correct ad registration
+        AdButler.domain = 'servedbyadbutler.com';
         AdButler.ads.push({
           handler: function(opt) {
-            AdButler.register(188651, zoneId, [300, 380], 'specialty-ad', opt);
+            AdButler.register(373247, zoneId, [300, 380], 'specialty-ad', opt);
           },
           opt: {}
         });
@@ -87,7 +89,6 @@
     } else {
       document.getElementById('specialty-ad').innerText = 'No ad available for this specialty.';
     }
-  </script>
-  
+  </script>  
 </body>
 </html>
