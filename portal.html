@@ -76,8 +76,6 @@
     window.adb_data = { "specialty-taxonomy": specialty };
     window.AdButler = window.AdButler || {};
     AdButler.domain = 'servedbyadbutler.com';
-
-    // ✅ Set unique place counter for this zone
     var plc915523 = window.plc915523 || 0;
 
     if (zoneId) {
@@ -85,24 +83,12 @@
       script.src = 'https://servedbyadbutler.com/app.js';
       script.async = true;
       script.onload = function () {
-        AdButler.ads = AdButler.ads || [];
-
-        setTimeout(() => {
-          AdButler.ads.push({
-            handler: function(opt) {
-              AdButler.register(373247, zoneId, [300, 380], 'specialty-ad', opt);
-            },
-            opt: {
-              place: plc915523++,
-              domain: 'servedbyadbutler.com',
-              click: 'CLICK_MACRO_PLACEHOLDER'
-            }
-          });
-          logToTerminal(`AdButler ads array: ${JSON.stringify(AdButler.ads)}`);
-        }, 100);
-
-        logToTerminal(`AdButler object: ${JSON.stringify(window.AdButler)}`);
-        logToTerminal(`AdButler domain: ${AdButler.domain}`);
+        console.log("Calling AdButler.register directly");
+        AdButler.register(188651, zoneId, [300, 380], 'specialty-ad', {
+          place: plc915523++,
+          domain: 'servedbyadbutler.com',
+          click: 'CLICK_MACRO_PLACEHOLDER'
+        });
       };
       document.head.appendChild(script);
     } else {
