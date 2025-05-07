@@ -5,7 +5,7 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     # Serve the portal.html file when accessing the root URL
-    return send_from_directory('.', 'portal.html')
+    return send_from_directory('.', 'login.html')
 
 @app.route('/log', methods=['POST'])
 def log():
