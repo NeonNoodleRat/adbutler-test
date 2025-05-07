@@ -46,6 +46,15 @@
   </div>
 
   <script>
+    const logToTerminal = (message) => {
+      console.log(message); // Keep logging to the browser console
+      fetch('http://localhost:8000/log', { // Updated to match Flask server
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ log: message })
+      }).catch(err => console.error('Failed to log to terminal:', err));
+    };
+
     const specialtyByNPI = {
       '1234567890': 'Cardiology',
       '2345678901': 'Endocrinology',
@@ -63,8 +72,8 @@
     const zoneId = zoneIdBySpecialty[specialty];
   
     document.getElementById('specialty-info').innerText = `Specialty: ${specialty}`;
-    console.log('Specialty:', specialty);
-    console.log('Zone ID:', zoneId);
+    logToTerminal(`Specialty: ${specialty}`);
+    logToTerminal(`Zone ID: ${zoneId}`);
   
     // ✅ Set Data Key for AdButler targeting
     window.adb_data = {
@@ -90,12 +99,11 @@
             },
             opt: {}
           });
-          console.log('AdButler ads array:', AdButler.ads);
+          logToTerminal(`AdButler ads array: ${JSON.stringify(AdButler.ads)}`);
         }, 100); // Add a small delay
 
-        console.log('AdButler object:', window.AdButler);
-        console.log('AdButler domain:', AdButler.domain);
-        console.log('AdButler ads array:', AdButler.ads);
+        logToTerminal(`AdButler object: ${JSON.stringify(window.AdButler)}`);
+        logToTerminal(`AdButler domain: ${AdButler.domain}`);
       };
       document.head.appendChild(script);
     } else {
