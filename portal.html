@@ -79,16 +79,21 @@
         window.AdButler = window.AdButler || {};
         AdButler.ads = AdButler.ads || [];
 
-        // ✅ Set the domain correctly before registering the ad
+        // Set the domain
         AdButler.domain = 'servedbyadbutler.com';
 
-        AdButler.ads.push({
-          handler: function(opt) {
-            AdButler.register(373247, zoneId, [300, 380], 'specialty-ad', opt);
-          },
-          opt: {}
-        });
+        // Register the ad after ensuring the domain is set
+        setTimeout(() => {
+          AdButler.ads.push({
+            handler: function(opt) {
+              AdButler.register(373247, zoneId, [300, 380], 'specialty-ad', opt);
+            },
+            opt: {}
+          });
+          console.log('AdButler ads array:', AdButler.ads);
+        }, 100); // Add a small delay
 
+        console.log('AdButler object:', window.AdButler);
         console.log('AdButler domain:', AdButler.domain);
         console.log('AdButler ads array:', AdButler.ads);
       };
