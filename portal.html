@@ -50,19 +50,24 @@
       '2345678901': 'Endocrinology',
       '3456789012': 'Pediatrics'
     };
-
+  
     const zoneIdBySpecialty = {
-      'Cardiology': 915523,  // Your actual zone ID
+      'Cardiology': 915523,  // Replace with your actual AdButler zone ID
       'Endocrinology': 910002,
       'Pediatrics': 910003
     };
-
+  
     const npi = localStorage.getItem('npi');
     const specialty = specialtyByNPI[npi] || 'Cardiology';
     const zoneId = zoneIdBySpecialty[specialty];
-
+  
     document.getElementById('specialty-info').innerText = `Specialty: ${specialty}`;
-
+  
+    // ✅ Set Data Key for AdButler targeting
+    window.adb_data = {
+      "specialty-taxonomy": specialty
+    };
+  
     if (zoneId) {
       const script = document.createElement('script');
       script.src = 'https://servedbyadbutler.com/app.js';
@@ -70,7 +75,7 @@
       script.onload = function () {
         window.AdButler = window.AdButler || {};
         AdButler.ads = AdButler.ads || [];
-
+  
         AdButler.ads.push({
           handler: function(opt) {
             AdButler.register(188651, zoneId, [300, 380], 'specialty-ad', opt);
@@ -83,5 +88,6 @@
       document.getElementById('specialty-ad').innerText = 'No ad available for this specialty.';
     }
   </script>
+  
 </body>
 </html>
