@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MediMobile Portal</title>
-  <link rel="icon" href="data:," /> <!-- Suppress favicon request -->
+  <link rel="icon" href="data:," />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -26,7 +26,7 @@
     }
     .ad-container {
       width: 300px;
-      height: 380px; /* match actual zone size */
+      height: 380px;
       margin: 20px auto;
       border: 1px dashed #ccc;
       display: flex;
@@ -39,7 +39,6 @@
   <div class="portal-container">
     <h2>Welcome to the MediMobile Portal 1</h2>
     <p id="specialty-info"></p>
-
     <div class="ad-container" id="specialty-ad">
       Loading targeted ad...
     </div>
@@ -47,8 +46,8 @@
 
   <script>
     const logToTerminal = (message) => {
-      console.log(message); // Keep logging to the browser console
-      fetch('http://localhost:8000/log', { // Updated to match Flask server
+      console.log(message);
+      fetch('/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ log: message })
@@ -60,47 +59,47 @@
       '2345678901': 'Endocrinology',
       '3456789012': 'Pediatrics'
     };
-  
+
     const zoneIdBySpecialty = {
       'Cardiology': 915523,
       'Endocrinology': 910002,
       'Pediatrics': 910003
     };
-  
+
     const npi = localStorage.getItem('npi');
     const specialty = specialtyByNPI[npi] || 'Cardiology';
     const zoneId = zoneIdBySpecialty[specialty];
-  
     document.getElementById('specialty-info').innerText = `Specialty: ${specialty}`;
     logToTerminal(`Specialty: ${specialty}`);
     logToTerminal(`Zone ID: ${zoneId}`);
-  
-    // ✅ Set Data Key for AdButler targeting
-    window.adb_data = {
-      "specialty-taxonomy": specialty
-    };
-  
+
+    window.adb_data = { "specialty-taxonomy": specialty };
+    window.AdButler = window.AdButler || {};
+    AdButler.domain = 'servedbyadbutler.com';
+
+    // ✅ Set unique place counter for this zone
+    var plc915523 = window.plc915523 || 0;
+
     if (zoneId) {
       const script = document.createElement('script');
       script.src = 'https://servedbyadbutler.com/app.js';
       script.async = true;
       script.onload = function () {
-        window.AdButler = window.AdButler || {};
         AdButler.ads = AdButler.ads || [];
 
-        // Set the domain
-        AdButler.domain = 'servedbyadbutler.com';
-
-        // Register the ad after ensuring the domain is set
         setTimeout(() => {
           AdButler.ads.push({
             handler: function(opt) {
               AdButler.register(373247, zoneId, [300, 380], 'specialty-ad', opt);
             },
-            opt: {}
+            opt: {
+              place: plc915523++,
+              domain: 'servedbyadbutler.com',
+              click: 'CLICK_MACRO_PLACEHOLDER'
+            }
           });
           logToTerminal(`AdButler ads array: ${JSON.stringify(AdButler.ads)}`);
-        }, 100); // Add a small delay
+        }, 100);
 
         logToTerminal(`AdButler object: ${JSON.stringify(window.AdButler)}`);
         logToTerminal(`AdButler domain: ${AdButler.domain}`);
@@ -110,6 +109,5 @@
       document.getElementById('specialty-ad').innerText = 'No ad available for this specialty.';
     }
   </script>
-  
 </body>
 </html>
