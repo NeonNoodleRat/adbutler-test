@@ -25,7 +25,7 @@
     }
     .ad-container {
       width: 300px;
-      height: 250px;
+      height: 380px; /* match actual zone size */
       margin: 20px auto;
       border: 1px dashed #ccc;
       display: flex;
@@ -52,13 +52,13 @@
     };
 
     const zoneIdBySpecialty = {
-      'Cardiology': 910001,
+      'Cardiology': 915523,  // Your actual zone ID
       'Endocrinology': 910002,
       'Pediatrics': 910003
     };
 
     const npi = localStorage.getItem('npi');
-    const specialty = specialtyByNPI[npi] || 'General';
+    const specialty = specialtyByNPI[npi] || 'Cardiology';
     const zoneId = zoneIdBySpecialty[specialty];
 
     document.getElementById('specialty-info').innerText = `Specialty: ${specialty}`;
@@ -73,7 +73,7 @@
 
         AdButler.ads.push({
           handler: function(opt) {
-            AdButler.register(188651, zoneId, [300, 250], 'specialty-ad', opt);
+            AdButler.register(188651, zoneId, [300, 380], 'specialty-ad', opt);
           },
           opt: {}
         });
