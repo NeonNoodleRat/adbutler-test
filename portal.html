@@ -73,18 +73,17 @@
       script.src = 'https://servedbyadbutler.com/app.js';
       script.async = true;
       script.onload = function () {
-        window.AdButler = window.AdButler || {};
-        AdButler.ads = AdButler.ads || [];
-  
-        // ✅ Set domain and push correct ad registration
-        AdButler.domain = 'servedbyadbutler.com';
-        AdButler.ads.push({
-          handler: function(opt) {
-            AdButler.register(373247, zoneId, [300, 380], 'specialty-ad', opt);
-          },
-          opt: {}
-        });
-      };
+      window.AdButler = window.AdButler || {};
+      AdButler.ads = AdButler.ads || [];
+      AdButler.domain = 'servedbyadbutler.com';  // ✅ Set BEFORE register()
+
+      AdButler.ads.push({
+        handler: function(opt) {
+          AdButler.register(373247, zoneId, [300, 380], 'specialty-ad', opt);
+        },
+        opt: {}
+      });
+    };
       document.head.appendChild(script);
     } else {
       document.getElementById('specialty-ad').innerText = 'No ad available for this specialty.';
