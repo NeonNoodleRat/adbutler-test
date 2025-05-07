@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!--
+  File: index.html
+
+  Description:
+  This mock login page is designed to simulate the website's login environment 
+  for testing AdButler ad integration. It replicates the basic layout and styling 
+  of the production login screen, and includes a 300x250 ad slot to test contextual 
+  targeting scenarios based on provider specialty or page type.
+
+  This file is used in conjunction with AdButler's JavaScript ad tags to evaluate 
+  how ads behave in a controlled setting before integrating with the live site.
+
+  Created for internal development and testing only.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediMobile Login Test</title>
+  <style>
+    body {
+      background-color: #1e1e1e;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-box {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 350px;
+      text-align: center;
+    }
+    .login-box img.logo {
+      width: 160px;
+      margin-bottom: 20px;
+    }
+    .login-box h2 {
+      margin-bottom: 20px;
+    }
+    .login-box input[type="text"],
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .login-box button {
+      background-color: #58b947;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      width: 100%;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .login-box .link {
+      display: block;
+      margin-top: 10px;
+      color: #58b947;
+      text-decoration: none;
+    }
+    .login-box .ad-container {
+      width: 300px;
+      height: 250px;
+      margin: 20px auto 0 auto;
+      border: 1px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ad-hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <img class="logo" src="https://login.medimobile.com/Static/Images/logo22.png?v=7.5.69.2" alt="MediMobile Logo">
+    <h2>Log In</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="simulateLogin()">Log In</button>
+    <a href="#" class="link">Forgot Your Username or Password?</a>
+    <div class="ad-container" id="content-slot-1">Loading...</div>
+  </div>
+
+  <script type="text/javascript">
+    function simulateLogin() {
+      const username = document.getElementById('username').value;
+      // Simulate hardcoded user to NPI mapping
+      const userToNPI = {
+        'cardio_user': '1234567890',
+        'endo_user': '2345678901',
+        'peds_user': '3456789012'
+      };
+
+      const npi = userToNPI[username] || '0000000000';
+      localStorage.setItem('npi', npi);
+      window.location.href = 'portal.html';
+    }
+
+    function hideAdIfBlocked() {
+      const el = document.getElementById("content-slot-1");
+      if (el && el.innerHTML.includes("Loading")) {
+        el.classList.add("ad-hidden");
+      }
+    }
+
+    (function(){
+      var s = document.createElement("script");
+      s.async = true;
+      s.type = "text/javascript";
+      s.src = 'https://servedbyadbutler.com/app.js';
+      s.onload = function () {
+        var AdButler = window.AdButler || {};
+        AdButler.ads = AdButler.ads || [];
+        var plc910943 = window.plc910943 || 0;
+        var abkw = window.abkw || '';
+        AdButler.ads.push({
+          handler: function(opt) {
+            AdButler.register(188651, 910943, [300, 250], 'content-slot-1', opt);
+          },
+          opt: {
+            place: plc910943++,
+            keywords: abkw,
+            domain: 'servedbyadbutler.com',
+            click: 'CLICK_MACRO_PLACEHOLDER'
+          }
+        });
+      };
+      s.onerror = hideAdIfBlocked;
+      document.head.appendChild(s);
+    })();
+  </script>
+</body>
+</html>
