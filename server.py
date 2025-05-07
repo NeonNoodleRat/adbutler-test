@@ -1,6 +1,11 @@
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 
 app = Flask(__name__)
+
+@app.route('/')
+def home():
+    # Serve the portal.html file when accessing the root URL
+    return send_from_directory('.', 'portal.html')
 
 @app.route('/log', methods=['POST'])
 def log():
