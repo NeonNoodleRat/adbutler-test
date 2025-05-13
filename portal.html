@@ -33,20 +33,42 @@
       align-items: center;
       justify-content: center;
     }
+    #debug-panel {
+      margin-top: 20px;
+      text-align: left;
+      font-size: 12px;
+      padding: 10px;
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      max-height: 200px;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
   <div class="portal-container">
-    <h2>Welcome to the MediMobile Portal 1</h2>
+    <h2>Welcome to the MediMobile Portal</h2>
     <p id="specialty-info"></p>
     <div class="ad-container" id="specialty-ad">
       Loading targeted ad...
     </div>
+    <div id="debug-panel">
+      <h4>AdButler Debug Info:</h4>
+      <div id="debug-log"></div>
+    </div>
   </div>
 
   <script>
+    // Enhanced logging function with UI output
     const logToTerminal = (message) => {
       console.log(message);
+      // Add to debug panel
+      const debugLog = document.getElementById('debug-log');
+      const logLine = document.createElement('div');
+      logLine.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+      debugLog.appendChild(logLine);
+      
+      // Also send to server if needed
       fetch('/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -54,46 +76,101 @@
       }).catch(err => console.error('Failed to log to terminal:', err));
     };
 
+    // Define specialty mappings
     const specialtyByNPI = {
       '1234567890': 'Cardiology',
-      '2345678901': 'Gatroenterology',
+      '2345678901': 'Gastroenterology', // Fixed typo in Gastroenterology
       '3456789012': 'Rheumatology'
     };
 
     const zoneIdBySpecialty = {
       'Cardiology': 915523,
-      'Gatroenterology': 910002,
+      'Gastroenterology': 910002, // Fixed typo here too
       'Rheumatology': 910003
     };
 
+    // Turn on AdButler debug mode
+    window.adb_debug = true;
+    
+    // Get NPI and specialty from localStorage
     const npi = localStorage.getItem('npi');
+    logToTerminal(`Loaded NPI from storage: ${npi}`);
+    
     const specialty = specialtyByNPI[npi] || 'Cardiology';
     const zoneId = zoneIdBySpecialty[specialty];
+    
+    // Set up the specialty info and log details
     document.getElementById('specialty-info').innerText = `Specialty: ${specialty}`;
-    logToTerminal(`Specialty: ${specialty}`);
-    logToTerminal(`Zone ID: ${zoneId}`);
-
+    logToTerminal(`Identified specialty: ${specialty}`);
+    logToTerminal(`Using Zone ID: ${zoneId}`);
+    
+    // Set up AdButler data keys BEFORE loading AdButler script
     window.adb_data = { "specialty-taxonomy": specialty };
-    window.AdButler = window.AdButler || {};
-    AdButler.domain = 'servedbyadbutler.com';
+    logToTerminal(`Set AdButler data key: specialty-taxonomy=${specialty}`);
+    
+    // Set up AdButler
+    var AdButler = window.AdButler || {};
+    AdButler.ads = AdButler.ads || [];
+    var abkw = window.abkw || '';
     var plc915523 = window.plc915523 || 0;
-
-    if (zoneId) {
-      const script = document.createElement('script');
-      script.src = 'https://servedbyadbutler.com/app.js';
-      script.async = true;
-      script.onload = function () {
-        console.log("Calling AdButler.register directly");
-        AdButler.register(188651, zoneId, [300, 380], 'specialty-ad', {
-          place: plc915523++,
-          domain: 'servedbyadbutler.com',
-          click: 'CLICK_MACRO_PLACEHOLDER'
-        });
-      };
-      document.head.appendChild(script);
-    } else {
-      document.getElementById('specialty-ad').innerText = 'No ad available for this specialty.';
-    }
+    
+    logToTerminal('Setting up AdButler ad request');
+    
+    // Monitor network requests
+    const originalFetch = window.fetch;
+    window.fetch = function(url, options) {
+      if (url.includes('adbutler') || url.includes('servedbyadbutler')) {
+        logToTerminal(`AdButler network request: ${url}`);
+      }
+      return originalFetch.apply(this, arguments);
+    };
+    
+    // Set a timeout to check if the ad loaded
+    setTimeout(() => {
+      const adDiv = document.getElementById('specialty-ad');
+      if (adDiv.innerHTML.includes('Loading targeted ad')) {
+        logToTerminal('WARNING: AdButler did not respond within 5 seconds');
+        logToTerminal('Checking if ad div was modified by AdButler...');
+        // Check if AdButler created any elements
+        if (adDiv.children.length === 0) {
+          logToTerminal('No child elements found - AdButler did not modify the ad container');
+        } else {
+          logToTerminal(`Found ${adDiv.children.length} child elements in ad container`);
+        }
+      } else {
+        logToTerminal('Ad appears to have loaded successfully!');
+      }
+    }, 5000);
+    
+    // Use the AdButler.ads.push pattern as recommended in documentation
+    AdButler.ads.push({
+      handler: function(opt) {
+        logToTerminal('AdButler handler function called');
+        AdButler.register(188651, zoneId, [300, 380], 'specialty-ad', opt);
+        logToTerminal('AdButler.register called with zoneId: ' + zoneId);
+      },
+      opt: {
+        place: plc915523++,
+        keywords: abkw,
+        domain: 'servedbyadbutler.com',
+        click: 'CLICK_MACRO_PLACEHOLDER',
+        // Include data keys in the opt parameter too for redundancy
+        data: { "specialty-taxonomy": specialty }
+      }
+    });
+    
+    // Load the AdButler script
+    logToTerminal('Loading AdButler app.js script');
+    const script = document.createElement('script');
+    script.src = 'https://servedbyadbutler.com/app.js';
+    script.async = true;
+    script.onload = function() {
+      logToTerminal('AdButler app.js script loaded successfully');
+    };
+    script.onerror = function() {
+      logToTerminal('ERROR: Failed to load AdButler app.js script');
+    };
+    document.head.appendChild(script);
   </script>
 </body>
 </html>
