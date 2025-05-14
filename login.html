@@ -43,7 +43,7 @@
     .login-box h2 {
       margin-bottom: 20px;
     }
-    .login-box input[type="text"],
+    .login-box select,
     .login-box input[type="password"] {
       width: 100%;
       padding: 10px;
@@ -84,7 +84,11 @@
   <div class="login-box">
     <img class="logo" src="https://login.medimobile.com/Static/Images/logo22.png?v=7.5.69.2" alt="MediMobile Logo">
     <h2>Log In</h2>
-    <input type="text" id="username" placeholder="Username" />
+    <select id="username">
+      <option value="cardio_user">cardio_user</option>
+      <option value="gi_user">gi_user</option>
+      <option value="rheum_user">rheum_user</option>
+    </select>
     <input type="password" id="password" placeholder="Password" />
     <button onclick="simulateLogin()">Log In 1</button>
     <a href="#" class="link">Forgot Your Username or Password?</a>
