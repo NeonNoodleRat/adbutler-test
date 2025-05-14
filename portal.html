@@ -105,8 +105,8 @@
     logToTerminal(`Using Zone ID: ${zoneId}`);
     
     // Set up AdButler data keys BEFORE loading AdButler script
-    window.adb_data = { "specialty-taxonomy": specialty };
-    logToTerminal(`Set AdButler data key: specialty-taxonomy=${specialty}`);
+    window.adb_data = { "specialty-taxonomy-list": specialty };
+    logToTerminal(`Set AdButler data key: specialty-taxonomy-list=${specialty}`);
     
     // Set up AdButler
     var AdButler = window.AdButler || {};
@@ -155,7 +155,7 @@
         domain: 'servedbyadbutler.com',
         click: 'CLICK_MACRO_PLACEHOLDER',
         // Include data keys in the opt parameter too for redundancy
-        data: { "specialty-taxonomy": specialty }
+        data: { "specialty-taxonomy-list": specialty }
       }
     });
     
