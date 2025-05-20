@@ -12,6 +12,11 @@ def portal():
     # Serve the portal.html file when redirected
     return send_from_directory('.', 'portal.html')
 
+@app.route('/bill-create.html')
+def bill_create():
+    # Serve the bill-create.html file when redirected
+    return send_from_directory('.', 'bill-create.html')
+
 @app.route('/log', methods=['POST'])
 def log():
     data = request.get_json()

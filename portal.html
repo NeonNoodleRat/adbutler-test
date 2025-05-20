@@ -49,6 +49,7 @@
   <div class="portal-container">
     <h2>Welcome to the MediMobile Portal</h2>
     <p id="specialty-info"></p>
+    <button id="create-bill-btn" style="margin-bottom:20px;">Create Bill</button>
     <div class="ad-container" id="specialty-ad">
       Loading targeted ad...
     </div>
@@ -185,6 +186,11 @@
         logToTerminal('Ad appears to have loaded successfully!');
       }
     }, 5000);
+
+    // Add event listener for Create Bill button
+    document.getElementById('create-bill-btn').onclick = function() {
+      window.location.href = 'bill-create.html';
+    };
   </script>
 </body>
 </html>
