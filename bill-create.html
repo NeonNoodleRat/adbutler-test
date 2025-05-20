@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Bill Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .bill-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 400px;
+    }
+    .ad-container {
+      width: 300px;
+      height: 250px;
+      margin: 20px auto;
+      border: 1px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="bill-container">
+    <h2>Create New Bill (Demo)</h2>
+    <label for="diagnosis">Select ICD-10 Diagnosis Code:</label>
+    <select id="diagnosis" onchange="handleICD10Change()">
+      <option value="">-- Select Diagnosis Code --</option>
+      <option value="E10.10">E10.10 - Type 1 diabetes mellitus with ketoacidosis</option>
+      <option value="K59.02">K59.02 - Outlet dysfunction constipation</option>
+      <option value="I11.0">I11.0 - Hypertensive heart disease with heart failure</option>
+      <option value="J44.1">J44.1 - COPD w/ acute exacerbation</option>
+    </select>
+    <div class="ad-container" id="icd10-ad">Loading ad...</div>
+  </div>
+
+  <script>
+    window.adb_debug = true;
+
+    function handleICD10Change() {
+      const code = document.getElementById('diagnosis').value;
+      window.dataKeys = { 'icd10-code': [code] };
+      loadAdForICD10(code);
+    }
+
+    function loadAdForICD10(code) {
+      const adContainer = document.getElementById("icd10-ad");
+      adContainer.innerHTML = "Loading ad...";
+
+      var AdButler = window.AdButler || {};
+      AdButler.ads = AdButler.ads || [];
+      var plc999999 = window.plc999999 || 0; // Placeholder Zone ID
+
+      const script = document.createElement('script');
+      script.async = true;
+      script.type = "text/javascript";
+      script.src = 'https://servedbyadbutler.com/app.js';
+      script.onload = function () {
+        AdButler.ads.push({
+          handler: function(opt) {
+            opt.dataKeys = window.dataKeys;
+            AdButler.register(188651, 915523, [300, 250], 'icd10-ad', opt);
+          },
+          opt: {
+            place: plc999999++,
+            domain: 'servedbyadbutler.com',
+            keywords: '',
+            click: 'CLICK_MACRO_PLACEHOLDER',
+            dataKeys: window.dataKeys
+          }
+        });
+      };
+      document.head.appendChild(script);
+    }
+  </script>
+</body>
+</html>
