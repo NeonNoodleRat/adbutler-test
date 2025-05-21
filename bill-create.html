@@ -71,6 +71,10 @@
   <script>
     // Turn on AdButler debug mode
     window.adb_debug = true;
+    
+    // Track initialization state
+    let adButlerInitialized = false;
+    let pendingCode = null;
 
     // Enhanced logging function with UI output
     const logToTerminal = (message) => {
@@ -89,6 +93,36 @@
       }).catch(err => console.error('Failed to log to terminal:', err));
     };
 
+    // Initialize AdButler first, before any selections are made
+    function initializeAdButler() {
+      logToTerminal('Initializing AdButler...');
+      
+      const script = document.createElement('script');
+      script.async = true;
+      script.type = "text/javascript";
+      script.src = 'https://servedbyadbutler.com/app.js';
+      
+      script.onload = function() {
+        logToTerminal('AdButler app.js script loaded successfully');
+        adButlerInitialized = true;
+        
+        // Process any pending code selection
+        if (pendingCode) {
+          logToTerminal(`Processing pending ICD-10 code: ${pendingCode}`);
+          loadAdForICD10(pendingCode);
+          pendingCode = null;
+        }
+      };
+      
+      script.onerror = function() {
+        logToTerminal('ERROR: Failed to load AdButler app.js script');
+        adButlerInitialized = false;
+      };
+      
+      // Add script to document to start loading
+      document.head.appendChild(script);
+    }
+
     function handleICD10Change() {
       const code = document.getElementById('diagnosis').value;
       if (!code) return;
@@ -102,7 +136,13 @@
       
       logToTerminal(`Setting data key: ${JSON.stringify(dataKeyObj)}`);
       
-      loadAdForICD10(code);
+      if (adButlerInitialized) {
+        loadAdForICD10(code);
+      } else {
+        logToTerminal('AdButler not yet initialized. Setting as pending code.');
+        pendingCode = code;
+        initializeAdButler();
+      }
     }
 
     function loadAdForICD10(code) {
@@ -110,53 +150,32 @@
       adContainer.innerHTML = "Loading ad...";
       logToTerminal('Loading targeted ad for ICD-10 code...');
 
-      // Clear any existing AdButler scripts
-      const existingScripts = document.querySelectorAll('script[src*="servedbyadbutler.com"]');
-      existingScripts.forEach(script => script.remove());
-
+      // Important: Define these variables globally
       var AdButler = window.AdButler || {};
       AdButler.ads = AdButler.ads || [];
-      var plc915523 = window.plc915523 || 0; // Using your zone ID from portal.html
-
-      const script = document.createElement('script');
-      script.async = true;
-      script.type = "text/javascript";
-      script.src = 'https://servedbyadbutler.com/app.js';
+      var plc924274 = window.plc924274 || 0; // Corrected zone ID variable name
       
-      script.onload = function () {
-        logToTerminal('AdButler app.js script loaded successfully');
-        
-        AdButler.ads.push({
-          handler: function(opt) {
-            logToTerminal('AdButler handler function called');
-            
-            // Set the data keys in the opt parameter
-            opt.dataKeys = window.dataKeys;
-            logToTerminal(`Data keys being sent: ${JSON.stringify(opt.dataKeys)}`);
-            
-            // Register the ad - using your create bill zone ID (924274)
-            // the "create bill (300x250)" zone
-            AdButler.register(188651, 924274, [300, 250], 'icd10-ad', opt);
-            logToTerminal(`AdButler.register called with zoneId: 915523`);
-          },
-          opt: {
-            place: plc915523++,
-            domain: 'servedbyadbutler.com',
-            keywords: '',
-            click: 'CLICK_MACRO_PLACEHOLDER',
-            // Include data keys in the initial opt
-            dataKeys: window.dataKeys
-          }
-        });
-      };
-      
-      script.onerror = function() {
-        logToTerminal('ERROR: Failed to load AdButler app.js script');
-      };
-      
-      // Add script to document to start loading
-      logToTerminal('Loading AdButler app.js script');
-      document.head.appendChild(script);
+      AdButler.ads.push({
+        handler: function(opt) {
+          logToTerminal('AdButler handler function called');
+          
+          // Set the data keys in the opt parameter
+          opt.dataKeys = window.dataKeys;
+          logToTerminal(`Data keys being sent: ${JSON.stringify(opt.dataKeys)}`);
+          
+          // Register the ad - using the correct zone ID (924274)
+          AdButler.register(188651, 924274, [300, 250], 'icd10-ad', opt);
+          logToTerminal(`AdButler.register called with zoneId: 924274`);
+        },
+        opt: {
+          place: plc924274++,
+          domain: 'servedbyadbutler.com',
+          keywords: '',
+          click: 'CLICK_MACRO_PLACEHOLDER',
+          // Include data keys in the initial opt
+          dataKeys: window.dataKeys
+        }
+      });
       
       // Set a timeout to check if the ad loaded
       setTimeout(() => {
@@ -184,6 +203,9 @@
       }
       return originalFetch.apply(this, arguments);
     };
+    
+    // Initialize AdButler on page load
+    document.addEventListener('DOMContentLoaded', initializeAdButler);
   </script>
 </body>
 </html>
