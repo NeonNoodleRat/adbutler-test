@@ -133,8 +133,9 @@
             opt.dataKeys = window.dataKeys;
             logToTerminal(`Data keys being sent: ${JSON.stringify(opt.dataKeys)}`);
             
-            // Register the ad - using your create bill zone ID (915523)
-            AdButler.register(188651, 915523, [300, 250], 'icd10-ad', opt);
+            // Register the ad - using your create bill zone ID (924274)
+            // the "create bill (300x250)" zone
+            AdButler.register(188651, 924274, [300, 250], 'icd10-ad', opt);
             logToTerminal(`AdButler.register called with zoneId: 915523`);
           },
           opt: {
