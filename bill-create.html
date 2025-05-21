@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,6 +37,16 @@
       padding: 10px;
       margin-top: 20px;
     }
+    #debug-panel {
+      margin-top: 20px;
+      text-align: left;
+      font-size: 12px;
+      padding: 10px;
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      max-height: 200px;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
@@ -52,46 +61,127 @@
       <option value="6A600ZZ">[6A600ZZ] Phototherapy of skin, single</option>
     </select>
     <div class="ad-container" id="icd10-ad">Loading ad...</div>
+    <div id="debug-panel">
+      <h4>AdButler Debug Info:</h4>
+      <div id="debug-log"></div>
+    </div>
   </div>
 
   <script>
+    // Turn on AdButler debug mode
     window.adb_debug = true;
+
+    // Enhanced logging function with UI output
+    const logToTerminal = (message) => {
+      console.log(message);
+      // Add to debug panel
+      const debugLog = document.getElementById('debug-log');
+      const logLine = document.createElement('div');
+      logLine.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+      debugLog.appendChild(logLine);
+      
+      // Also send to server if needed
+      fetch('/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ log: message })
+      }).catch(err => console.error('Failed to log to terminal:', err));
+    };
 
     function handleICD10Change() {
       const code = document.getElementById('diagnosis').value;
-      window.dataKeys = { 'icd10-code-list': [code] };
+      if (!code) return;
+      
+      // Log the ICD-10 code selection
+      logToTerminal(`Selected ICD-10 code: ${code}`);
+      
+      // Set up data keys according to AdButler's format for LIST type
+      const dataKeyObj = { 'icd10-code-list': [code] };
+      window.dataKeys = dataKeyObj;
+      
+      logToTerminal(`Setting data key: ${JSON.stringify(dataKeyObj)}`);
+      
       loadAdForICD10(code);
     }
 
     function loadAdForICD10(code) {
       const adContainer = document.getElementById("icd10-ad");
       adContainer.innerHTML = "Loading ad...";
+      logToTerminal('Loading targeted ad for ICD-10 code...');
+
+      // Clear any existing AdButler scripts
+      const existingScripts = document.querySelectorAll('script[src*="servedbyadbutler.com"]');
+      existingScripts.forEach(script => script.remove());
 
       var AdButler = window.AdButler || {};
       AdButler.ads = AdButler.ads || [];
-      var plc999999 = window.plc999999 || 0; // Placeholder Zone ID
+      var plc915523 = window.plc915523 || 0; // Using your zone ID from portal.html
 
       const script = document.createElement('script');
       script.async = true;
       script.type = "text/javascript";
       script.src = 'https://servedbyadbutler.com/app.js';
+      
       script.onload = function () {
+        logToTerminal('AdButler app.js script loaded successfully');
+        
         AdButler.ads.push({
           handler: function(opt) {
+            logToTerminal('AdButler handler function called');
+            
+            // Set the data keys in the opt parameter
             opt.dataKeys = window.dataKeys;
+            logToTerminal(`Data keys being sent: ${JSON.stringify(opt.dataKeys)}`);
+            
+            // Register the ad - using your create bill zone ID (915523)
             AdButler.register(188651, 915523, [300, 250], 'icd10-ad', opt);
+            logToTerminal(`AdButler.register called with zoneId: 915523`);
           },
           opt: {
-            place: plc999999++,
+            place: plc915523++,
             domain: 'servedbyadbutler.com',
             keywords: '',
             click: 'CLICK_MACRO_PLACEHOLDER',
+            // Include data keys in the initial opt
             dataKeys: window.dataKeys
           }
         });
       };
+      
+      script.onerror = function() {
+        logToTerminal('ERROR: Failed to load AdButler app.js script');
+      };
+      
+      // Add script to document to start loading
+      logToTerminal('Loading AdButler app.js script');
       document.head.appendChild(script);
+      
+      // Set a timeout to check if the ad loaded
+      setTimeout(() => {
+        const adDiv = document.getElementById('icd10-ad');
+        if (adDiv.textContent.includes('Loading ad')) {
+          logToTerminal('WARNING: AdButler did not respond within 5 seconds');
+          logToTerminal('Checking if ad div was modified by AdButler...');
+          // Check if AdButler created any elements
+          if (adDiv.children.length === 0) {
+            logToTerminal('No child elements found - AdButler did not modify the ad container');
+          } else {
+            logToTerminal(`Found ${adDiv.children.length} child elements in ad container`);
+          }
+        } else {
+          logToTerminal('Ad appears to have loaded successfully!');
+        }
+      }, 5000);
     }
+
+    // Monitor network requests
+    const originalFetch = window.fetch;
+    window.fetch = function(url, options) {
+      if (url.includes('adbutler') || url.includes('servedbyadbutler')) {
+        logToTerminal(`AdButler network request: ${url}`);
+      }
+      return originalFetch.apply(this, arguments);
+    };
   </script>
 </body>
 </html>
