@@ -59,7 +59,7 @@
 
     function handleICD10Change() {
       const code = document.getElementById('diagnosis').value;
-      window.dataKeys = { 'icd10-code': [code] };
+      window.dataKeys = { 'icd10-code-list': [code] };
       loadAdForICD10(code);
     }
 
